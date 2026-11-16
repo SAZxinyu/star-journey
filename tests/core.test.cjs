@@ -20,7 +20,7 @@ test('the route puzzle has a valid path and rejects obstacles and row wrap',()=>
 });
 test('every historical card and quiz answer refers to a valid source',()=>{
  for(const item of [...D.chapters,...D.stories,...D.questions])assert.ok(D.sources[item.source]?.url.startsWith('https://'));
- assert.equal(new Set(D.chapters.map(x=>x.id)).size,9);assert.equal(new Set(D.stories.map(x=>x.id)).size,6);
+ assert.equal(new Set(D.chapters.map(x=>x.id)).size,9);assert.equal(new Set(D.stories.map(x=>x.id)).size,7);
  for(const q of D.questions)assert.ok(Number.isInteger(q.answer)&&q.options[q.answer]);
 });
 
@@ -28,7 +28,7 @@ test('graph IDs, references, types and provenance are consistent',()=>{
  const G=D.graph,ids=new Set(),edges=new Set();
  for(const n of G.nodes){
   assert.ok(!ids.has(n.id),`duplicate node ${n.id}`);ids.add(n.id);
-  assert.ok(['place','event','person','story','spirit'].includes(n.type));
+  assert.ok(['place','event','person','story','spirit','topic','equipment'].includes(n.type));
   assert.equal(G.index[n.id],n);
   assert.ok(D.sources[n.source]?.title&&D.sources[n.source]?.publisher);
   assert.match(D.sources[n.source].url,/^https:\/\//);
@@ -43,7 +43,7 @@ test('graph IDs, references, types and provenance are consistent',()=>{
   assert.ok(D.sources[r.source]?.url);
  }
  assert.equal(G.nodes.filter(n=>n.type==='place').length,9);
- assert.equal(G.nodes.filter(n=>n.type==='event').length,9);
+ assert.equal(G.nodes.filter(n=>n.type==='event'&&n.chapterId).length,9);
  assert.equal(G.relations.filter(r=>r.relation==='时间先后').length,8);
 });
 test('all nine archives have substantive details and valid challenge/story links',()=>{
@@ -71,4 +71,59 @@ test('Wuqi and the 1936 meeting places are distinct and corrected everywhere',()
   const text=fs.readFileSync(require('node:path').join(__dirname,'..',file),'utf8');
   assert.ok(!text.includes('吴起会师'));assert.ok(!text.includes('静宁将台堡'));
  }
+});
+
+test('legacy saves retain progress; the new learning badge is independent and deduplicated',()=>{
+ const legacy={...C.initial(),completed:['grass'],read:['chen'],favorites:['chen'],actions:['learn'],note:'学习手记',bestScore:83,quizRuns:2};
+ delete legacy.learningBadges;
+ const restored=C.normalize(legacy);
+ assert.deepEqual(restored.learningBadges,[]);
+ for(const key of Object.keys(legacy))assert.deepEqual(restored[key],legacy[key]);
+ assert.deepEqual(C.normalize({...legacy,learningBadges:['radio-relay','radio-relay','bad',null]}).learningBadges,['radio-relay']);
+ assert.deepEqual(C.normalize({...legacy,learningBadges:'bad'}).learningBadges,[]);
+});
+test('radio handover requires setup, contact and confirmation before the original station may move',()=>{
+ let m=C.radioInitial();
+ for(const [index,action] of [[0,'move'],[1,'confirm'],[1,'setup'],[9,'move'],[1,'unknown']]){
+  const r=C.radioStep(m,index,action);assert.equal(r.ok,false);assert.equal(r.model,m);assert.ok(r.message);
+ }
+ for(let round=0;round<D.communication.rounds;round++){
+  const index=round%2===0?1:0,original=1-index;
+  for(const action of ['move','arrive','setup','contact']){
+   const previous=JSON.stringify(m),r=C.radioStep(m,index,action);
+   assert.equal(r.ok,true);assert.equal(JSON.stringify(m),previous,'reducer must not mutate');m=r.model;
+   assert.equal(m.stations[original].phase,'onair');assert.equal(m.handoffs,round);
+   assert.equal(C.radioStep(m,original,'move').ok,false);
+   assert.equal(m.stations.filter(s=>s.phase==='onair').length,1);
+  }
+  assert.equal(m.stations[index].phase,'waiting');
+  m=C.radioStep(m,index,'confirm').model;
+  assert.equal(m.handoffs,round+1);assert.equal(m.stations[index].phase,'onair');assert.equal(m.stations[original].phase,'packed');
+ }
+ assert.equal(m.finished,true);assert.equal(C.radioStep(m,0,'move').ok,false);
+ assert.equal(C.radioInitial().handoffs,0);
+ assert.deepEqual(C.initial().completed,[],'radio model cannot award a chapter');
+});
+test('all reachable radio states keep one station on air and invalid actions never change state',()=>{
+ const seen=new Set(),queue=[C.radioInitial()];
+ while(queue.length){
+  const model=queue.shift(),key=JSON.stringify(model);if(seen.has(key))continue;seen.add(key);
+  assert.equal(model.stations.filter(s=>s.phase==='onair').length,1);
+  assert.ok(model.handoffs>=0&&model.handoffs<=3);
+  for(const i of [0,1])for(const action of ['move','arrive','setup','contact','confirm']){
+   const r=C.radioStep(model,i,action);if(r.ok)queue.push(r.model);else assert.equal(r.model,model);
+  }
+ }
+ assert.ok(seen.size>10);
+});
+test('communication archive and graph references have provenance, without inventing a tenth station',()=>{
+ const t=D.communication,g=D.graph;
+ assert.equal(D.chapters.length,9);assert.equal(t.badgeId,'radio-relay');assert.equal(t.rounds,3);
+ for(const id of t.nodeIds)assert.ok(g.index[id]);
+ for(const source of t.sources){assert.ok(D.sources[source].title);assert.match(D.sources[source].url,/^https:/);}
+ assert.equal(g.index['equipment:hartley'].type,'equipment');
+ assert.ok(g.relations.some(r=>r.from==='event:radio-relay'&&r.to==='person:luo-ruoxia'));
+ assert.ok(g.relations.some(r=>r.from==='event:chishui'&&r.to==='topic:communication'));
+ assert.match(t.distinction,/通信保障/);assert.match(t.distinction,/技术侦察/);assert.match(t.modelNote,/教育模型/);
+ assert.ok(D.stories.some(s=>s.id==='radio'));
 });

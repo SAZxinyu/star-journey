@@ -165,3 +165,46 @@ window.XH_DATA = {
  // 汝城沙洲村的“半条被子”保持独立延伸阅读，不绑定九站地点。
  D.graph={nodes,relations,index:Object.fromEntries(nodes.map(n=>[n.id,n])),extensions:['story:quilt']};
 })();
+
+/* 通信专题：史料摘要与教学模型分开；不把模拟电台映射为真实编制或型号。 */
+(() => {
+ const D=window.XH_DATA;
+ const museum=D.sources.push({title:'黑夜走路的灯笼——长征中的无线电通信',publisher:'中国电信博物馆',url:'https://museum.chinatelecom.com.cn/yj/txkp/202210/t20221022_72057.html'})-1;
+ const equipment=D.sources.push({title:'长征路上的“灯笼”',publisher:'党建网 / 中国人民革命军事博物馆',url:'https://www.dangjian.cn/xsml/2026/07/28/detail_202607287835726.html'})-1;
+ const scientist=D.sources.push({title:'长征路上的科技力量｜王诤：半部电台起家，一生征战为民',publisher:'中国科协 / 中国科学家博物馆',url:'https://www.cast.org.cn/xw/BWTJ/art/2026/art_d975113cda2245e1833888ba7071dc17.html'})-1;
+ D.communication={
+  id:'communication',title:'红色电波·行军通信',badgeId:'radio-relay',rounds:3,sources:[museum,equipment,scientist],
+  background:'长途行军时，各部队驻留和出发的时间不同，电台开机时段难以重合。通信人员既要携带、保护器材，又要及时架台，保障指挥机关与部队联络。',
+  relay:'中国电信博物馆记述，无线电第一、第六分队分作两个梯队：一队先行，另一队留守收发；收到先行电台在新宿营地发出的信号后，留守队再收线出发。',
+  distinction:'无线电通信保障负责己方联络和信息传递；无线电技术侦察则侦收、分析敌方无线电信息。两者工作目标不同，不能把通信接力等同于侦察或破译。',
+  modelNote:'A、B电台、三段行程、操作步骤、确认状态和信号曲线均为原创教育模型，不对应真实部队编制、历史电文、军用密码或实际作战指令。曲线不表示真实频率、功率或传播范围。',
+  equipment:{id:'hartley',title:'15瓦哈特莱式发报机',description:'中国人民革命军事博物馆收藏的这部发报机曾参加长征。发报机承担发送功能，完整联络还需要收报、天线、供电及人员协同。下方为设备功能示意，不复原该文物外观，也不将其型号套用于A、B电台。',source:equipment}
+ };
+ D.stories.push({id:'radio',title:'守住联络：长征通信人员',category:'通信档案',symbol:'讯',tag:'团结协作',time:'长征时期 · 行军通信保障',
+  summary:'搬运、架台、守听与接替，让行进中的队伍保持联络。',
+  text:'长征行军频繁，电台需要在抵达后及时架设并投入工作。根据中国电信博物馆的记述，罗若遐率领的无线电第一分队曾留在原宿营地收发，等先行梯队发来新驻地信号后再转移。\n\n王诤是红军无线电通信事业的建设者，长征中承担通信保障工作。通信人员的专业训练、器材保护和分工协作，使联络得以延续。这与侦收、分析敌方信息的无线电技术侦察须分别理解。\n\n本专题的两部电台互动只提炼交替保障联络的思路，不重演历史电文，也不教授真实军用密码。',
+  question:'为什么“已经架好电台”还不能直接等同于“已经建立有效联络”？',source:museum,sources:[museum,scientist]});
+ const people=[
+  {id:'luo-ruoxia',title:'罗若遐',description:'无线电第一分队队长。中国电信博物馆引述其回忆，介绍留守梯队等待先行电台发出信号后再转移的做法。',source:museum},
+  {id:'wang-zheng',title:'王诤',description:'红军无线电通信事业的建设者，长征中承担通信保障任务，重视通信队伍建设与联络畅通。',source:scientist}
+ ];
+ D.people.push(...people);
+ const nodes=[
+  {id:'topic:communication',type:'topic',title:'长征通信史',source:museum},
+  {id:'event:radio-relay',type:'event',title:'电台交替转移',description:D.communication.relay,source:museum},
+  ...people.map(p=>({id:`person:${p.id}`,type:'person',title:p.title,personId:p.id,source:p.source})),
+  {id:'equipment:hartley',type:'equipment',title:D.communication.equipment.title,source:equipment},
+  {id:'story:radio',type:'story',title:'长征通信人员档案',storyId:'radio',source:museum}
+ ];
+ const relations=[
+  ['topic:communication','event:radio-relay','通信保障',museum],
+  ['event:radio-relay','person:luo-ruoxia','分队回忆',museum],
+  ['event:radio-relay','person:wang-zheng','通信建设',scientist],
+  ['topic:communication','equipment:hartley','相关文物',equipment],
+  ['topic:communication','story:radio','人员档案',museum],
+  ['event:chishui','topic:communication','通信保障',museum]
+ ].map(([from,to,relation,source])=>({from,to,relation,source}));
+ D.graph.nodes.push(...nodes);D.graph.relations.push(...relations);
+ nodes.forEach(n=>{D.graph.index[n.id]=n;});
+ D.communication.nodeIds=nodes.map(n=>n.id);
+})();
