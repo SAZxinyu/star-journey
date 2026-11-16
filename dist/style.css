@@ -13,3 +13,65 @@ body:has(dialog[open]){overflow:hidden}dialog{border:1px solid #dbc6a7;padding:0
 @media(max-width:375px){.hero h1{font-size:43px;letter-spacing:3px}.hero{min-height:520px}.hero-kicker{font-size:7px}.hero-copy{padding:25px 19px}.hero-buttons{gap:12px}.hero-buttons .primary{font-size:9px}.hero-buttons .text-button{font-size:9px}.history-strip strong{font-size:20px}.history-strip p{font-size:6px}.section-title h2{font-size:19px}.challenge-card,.archive-card{padding:17px 14px}.explore-card h3{font-size:21px}.story-row .story-art{min-width:95px}.story-row .story-copy h3{font-size:16px}.memory-grid .story-copy h3{font-size:16px}.page-heading h1{font-size:25px}.map-node b{font-size:8px}.journey-map{min-height:440px}}
 @media(max-width:650px){.hero h1 br{display:block}.hero-copy>p{font-size:11px}.hero-buttons .primary{font-size:11px}.story-row .story-copy p,.memory-grid .story-copy p{font-size:11px;line-height:1.9}.story-row .story-read,.memory-grid .story-read{font-size:10px}.action-item p{font-size:11px}.page-heading>p{font-size:11px}.game-card p{font-size:11px}.learning-note p{font-size:10px}.challenge-hero p{font-size:11px}.story-row .story-art{min-height:175px}.hero:after{background:linear-gradient(180deg,#f3e9d6 0%,#f3e9d6 31%,#f3e9d6e0 40%,#f3e9d640 58%,transparent 70%)}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* 星火记忆图谱：沿用纸张、朱红与暖金；不影响历史路线布局。 */
+.journey-tabs {display:flex;gap:10px;margin:0 0 22px;flex-wrap:wrap}
+.journey-tabs button {border:1px solid #cdb493;padding:12px 22px;color:#76583f;background:#f7eddd;font-size:14px;min-height:44px}
+.journey-tabs button[aria-pressed=true] {background:var(--red);border-color:var(--red);color:#fff3dc}
+.graph-layout {display:grid;grid-template-columns:minmax(0,3fr) minmax(310px,2fr);gap:22px;align-items:start}
+.graph-board,.graph-archive {background:#faf3e5;border:1px solid #d9c5a7;min-width:0}
+.graph-toolbar {display:flex;justify-content:space-between;align-items:center;gap:10px;padding:22px 20px 12px}
+.graph-toolbar strong {font:600 22px var(--serif);color:var(--red)}
+.graph-toolbar p,.graph-extension p {font-size:12px;color:#836950;line-height:1.8;margin-top:8px}
+.graph-toolbar .outline {font-size:12px;min-height:44px;padding:9px 12px;white-space:nowrap}
+.graph-legend {display:flex;gap:14px;flex-wrap:wrap;padding:8px 20px;font-size:12px;color:#76583f}
+.graph-legend span:before {content:'';display:inline-block;width:8px;height:8px;background:#ac3027;margin-right:5px;border:1px solid #805e39}
+.graph-legend span:nth-child(2):before {background:#d6af6d}
+.graph-legend span:nth-child(3):before {background:#8c6541}
+.graph-legend span:nth-child(4):before {background:#e6c5a4}
+.graph-legend span:nth-child(5):before {background:#e7d8b4;border-radius:50%}
+.graph-scroll {overflow-x:auto;padding:8px 2px;overscroll-behavior-inline:contain}
+.memory-graph {display:block;width:100%;min-width:580px;height:auto}
+.graph-edge path {fill:none;stroke:#a87947;stroke-width:1.5;transition:opacity .2s}
+.graph-edge.timeline path {stroke:#c4976b;stroke-dasharray:3 4}
+.graph-edge text {font-size:10px;fill:#795632;paint-order:stroke;stroke:#faf3e5;stroke-width:4px;stroke-linejoin:round}
+.graph-node {cursor:pointer;outline:none;transition:opacity .2s}
+.graph-node rect {fill:#f7ecd7;stroke:#ae8057;stroke-width:1.5;transition:fill .2s,stroke .2s}
+.graph-node .graph-label {fill:#4f3827;font-family:var(--serif);font-size:14px;font-weight:600;pointer-events:none}
+.graph-node .graph-type {fill:#8a6748;font-size:9px;letter-spacing:2px;pointer-events:none}
+.graph-node.type-event rect {fill:#e9d2a4;stroke:#a17237}
+.graph-node.type-person rect {fill:#eddcc5;stroke:#8c6541}
+.graph-node.type-story rect {fill:#f2dfcc;stroke:#b77b57}
+.graph-node.type-spirit rect {fill:#efe5ca;stroke:#b49a6a}
+.graph-node.selected rect {fill:var(--red);stroke:var(--red);stroke-width:3}
+.graph-node.selected text {fill:#fff0d6}
+.graph-node.muted {opacity:.5}
+.graph-node:hover,.graph-node:focus-visible {opacity:1}
+.graph-node:hover rect,.graph-node:focus-visible rect {stroke:var(--red);stroke-width:3}
+.graph-node:focus-visible rect {stroke:#39271b;stroke-width:4;stroke-dasharray:5 2}
+.graph-scroll-note {display:none;color:#836950;font-size:12px;padding:8px 20px;line-height:1.8}
+.graph-stations {display:flex;gap:8px;flex-wrap:wrap;padding:16px;border-top:1px dashed #d9c5a7}
+.graph-stations button,.archive-chip {border:1px solid #cdb493;color:#7f3b2d;background:#f4e7d0;font-size:13px;line-height:1.6;padding:9px 11px;min-height:44px}
+.graph-stations button[aria-pressed=true] {background:var(--red);color:#fff0d6}
+.graph-extension {padding:20px;border-top:1px solid #d9c5a7}
+.graph-extension>span {display:block;color:#886b4e;font-size:12px;margin-bottom:8px}
+.graph-extension .text-button {font-size:14px;min-height:44px}
+.graph-archive {padding:26px}
+.graph-archive h2 {font:600 29px/1.5 var(--serif);color:var(--red);margin:12px 0 20px}
+.archive-meta {margin:0;padding-bottom:18px;border-bottom:1px solid #ddc7a8}
+.archive-meta>div {margin:10px 0}
+.archive-meta dt {font-size:12px;color:#896a4c;margin-bottom:5px}
+.archive-meta dd {margin:0;font-size:14px;line-height:1.8;color:#503c2b}
+.archive-keywords {display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.graph-archive section {margin-top:23px}
+.graph-archive h3 {font:600 19px var(--serif);color:#7d3527;margin-bottom:10px}
+.graph-archive p {font-size:14px;line-height:2;color:#6e533e}
+.graph-archive .archive-note {font-size:13px;color:#8c7359}
+.graph-archive .archive-chip {margin:0 6px 7px 0;text-align:left}
+.graph-archive .source-inline {display:block;font-size:12px;line-height:1.9;margin:10px 0;overflow-wrap:anywhere;text-decoration:underline;text-underline-offset:3px}
+.archive-challenge {border-top:1px dashed #cdb493;margin-top:24px;padding-top:16px}
+.archive-challenge p {font-size:12px;margin-bottom:12px}
+.graph-welcome>p {margin-bottom:18px}
+@media(max-width:1190px) {.graph-layout {grid-template-columns:minmax(0,3fr) minmax(280px,2fr);gap:16px}.graph-archive {padding:22px}.graph-scroll-note {display:block}}
+@media(max-width:960px) {.graph-layout {grid-template-columns:1fr}.memory-graph {max-width:760px;margin:auto}.graph-scroll-note {display:block}}
+@media(max-width:650px) {.journey-tabs {gap:8px}.journey-tabs button {flex:1;padding:10px 8px;font-size:13px}.graph-toolbar {padding:18px 15px 8px}.graph-toolbar strong {font-size:20px}.graph-toolbar .outline {font-size:11px}.graph-legend {padding:8px 15px;gap:12px}.graph-archive {padding:22px}.graph-archive h2 {font-size:27px}.graph-stations {padding:14px}.graph-stations button {flex:1 0 28%;font-size:12px}.graph-scroll {max-height:680px}.graph-archive .primary {font-size:14px}}

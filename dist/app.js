@@ -9,6 +9,7 @@
  state.read=state.read.filter(id=>D.stories.some(c=>c.id===id));
  state.favorites=state.favorites.filter(id=>D.stories.some(c=>c.id===id));
  state.actions=state.actions.filter(id=>D.actions.some(c=>c.id===id));
+ let journeyView='route',graphExpanded=false,hasJourneySelection=false;
  let current='home',selected=0,memoryFilter='全部',active=null,toastTimer;
  const icons={home:'<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/>',map:'<path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3zM9 3v15M15 6v15"/>',flag:'<path d="M5 22V3m0 1c5-4 9 4 15 0v10c-6 4-10-4-15 0"/>',book:'<path d="M12 6c-3-3-7-3-10-2v16c4-1 7-1 10 1 3-2 6-2 10-1V4c-3-1-7-1-10 2zm0 0v15"/>',bag:'<rect x="5" y="6" width="14" height="16" rx="3"/><path d="M9 6V4a3 3 0 0 1 6 0v2M5 12h14M9 16h6"/>',arrow:'<path d="M4 12h16m-6-6 6 6-6 6"/>',heart:'<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8z"/>',mountain:'<path d="m2 21 8-17 5 10 3-5 5 12zm5-10 3 3 3-3"/>',code:'<path d="m8 5-7 7 7 7m8-14 7 7-7 7m-3-16-2 20"/>',check:'<path d="m5 12 4 4L20 5"/>',star:'<path d="m12 2 3 6.5 7 1-5 5 1 7-6-3.5L6 22l1-7-5-5 7-1z"/>',download:'<path d="M12 2v14m-5-5 5 5 5-5M3 17v5h18v-5"/>'};
  function icon(n,cl=''){return `<svg class="icon ${cl}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[n]||icons.star}</svg>`;}
@@ -22,13 +23,121 @@
  function eyebrow(t){return `<div class="eyebrow"><span></span>${t}</div>`;}
  function pageHeading(k,title,desc){return `<div class="page-heading">${eyebrow(k)}<h1>${title}</h1><p>${desc}</p></div>`;}
  function arrow(){return icon('arrow');}
- function home(){const next=D.chapters.findIndex(c=>!state.completed.includes(c.id));return `<section class="hero"><div class="hero-art" role="img" aria-label="原创木刻风插画：红军战士举着红旗，沿群山间的道路向前行进"></div><div class="hero-copy"><div class="hero-kicker"><span>★</span> 纪念中国工农红军长征胜利90周年</div><h1>山河铭记<br>星火<span>不息</span><b>。</b></h1><p>穿越九十载时光，重走信仰之路。<br>在每一次选择与前行中，让长征精神照亮青春。</p><div class="hero-buttons"><button class="primary" data-start="${next<0?0:next}">${state.completed.length?'继续我的征途':'启程，重走长征路'} ${arrow()}</button><button class="text-button" data-nav="memory">翻开红色记忆 <span>↗</span></button></div><div class="hero-caption"><span class="tiny-star">✦</span> 以代码为笔 · 以屏幕为卷 · 以青春作答</div></div><div class="art-label"><span>万水千山，只为向前</span><small>THE LONG MARCH · 1934—1936</small></div></section>
+ function home(){const next=D.chapters.findIndex(c=>!state.completed.includes(c.id));return `<section class="hero"><div class="hero-art" role="img" aria-label="AI辅助生成的主题艺术插画（非历史照片）：红军战士举着红旗，沿群山间的道路向前行进"></div><div class="hero-copy"><div class="hero-kicker"><span>★</span> 纪念中国工农红军长征胜利90周年</div><h1>山河铭记<br>星火<span>不息</span><b>。</b></h1><p>穿越九十载时光，重走信仰之路。<br>在每一次选择与前行中，让长征精神照亮青春。</p><div class="hero-buttons"><button class="primary" data-start="${next<0?0:next}">${state.completed.length?'继续我的征途':'启程，重走长征路'} ${arrow()}</button><button class="text-button" data-nav="memory">翻开红色记忆 <span>↗</span></button></div><div class="hero-caption"><span class="tiny-star">✦</span> 以代码为笔 · 以屏幕为卷 · 以青春作答</div></div><div class="art-label"><span>万水千山，只为向前</span><small>THE LONG MARCH · 1934—1936</small></div></section>
  <div class="history-strip"><div><strong>1934<span> — </span>1936</strong><p>一段改变中国命运的伟大远征</p></div><div><strong>25,000<small>里</small></strong><p>红一方面军长征行程</p></div><div><strong>90<small>载</small></strong><p>山河巨变，信仰如炬</p></div><div class="strip-motto">把历史读进心里<br><b>把精神写进行动</b>${icon('flag')}</div></div>
  <section class="section"><div class="section-title"><div><div class="overline">EXPLORE THE JOURNEY</div><h2>让历史可感，让精神可行<span>。</span></h2></div><p>不止于回望，更在于亲身探索。</p></div><div class="explore-grid"><button class="explore-card route-card" data-nav="map"><div class="card-top"><span>01 / 沉浸探索</span>${arrow()}</div><h3>一步一信仰<br>重走长征路</h3><p>九个历史节点，九次精神对话</p><div class="mini-route"><span>于都</span><i></i><span>遵义</span><i></i><span>会宁</span></div><span class="card-foot">历史地图 · 多样关卡 <b>开启征途 ↗</b></span></button><button class="explore-card challenge-card" data-nav="challenge"><div class="card-top"><span>02 / 知行挑战</span>${arrow()}</div><div class="big-symbol">✦</div><h3>在挑战中<br>读懂长征精神</h3><p>知识竞答 · 时空排序 · 信号记忆</p><span class="card-foot">每一次思考，都是一次成长</span></button><button class="explore-card archive-card" data-nav="memory"><div class="card-top"><span>03 / 红色记忆</span>${arrow()}</div><div class="archive-lines">信<br>仰</div><h3>那些故事<br>始终温暖有光</h3><p>英雄人物 · 军民故事 · 精神坐标</p><span class="card-foot">翻开历史，遇见不朽的力量</span></button></div></section>
  <section class="section memory-preview"><div class="section-title"><div><div class="overline">STORIES THAT STAY WITH US</div><h2>记住一个故事，传递一束光</h2></div><button class="text-button" data-nav="memory">走进红色记忆 ${arrow()}</button></div><div class="story-row">${D.stories.slice(0,3).map(storyCard).join('')}</div></section>
  <section class="relay-banner"><div><span class="overline">THE JOURNEY CONTINUES</span><h2>长征的路，在我们脚下延伸。</h2><p>把一份感动，变成一次行动。写下属于你的青春答卷。</p></div><button class="primary light" data-nav="action">接过青春的火炬 ${arrow()}</button><span class="relay-watermark">★</span></section>`;}
  function routeArt(){return `<svg class="map-art" viewBox="0 0 900 620" preserveAspectRatio="none" aria-hidden="true"><defs><pattern id="grid" width="38" height="38" patternUnits="userSpaceOnUse"><path d="M38 0H0V38" fill="none" stroke="#d0b99c" stroke-opacity=".18"/></pattern></defs><rect width="900" height="620" fill="url(#grid)"/><g fill="none" stroke="#d1b89b" stroke-width="1" opacity=".5">${Array.from({length:10},(_,i)=>`<path d="M${30+i*18} 580 Q${20+i*27} ${370-i*8} ${120+i*35} 320 T${430+i*32} 80"/>`).join('')}</g><path d="M0 510Q160 580 250 430T480 380T900 450" stroke="#a9bdc0" stroke-width="15" fill="none" opacity=".5"/><path d="M0 510Q160 580 250 430T480 380T900 450" stroke="#f8f2e8" stroke-width="2" stroke-dasharray="5 8" fill="none"/><g fill="#b7a18c" font-family="serif" font-size="18"><text x="760" y="430">江 西</text><text x="620" y="555">广 西</text><text x="400" y="480">贵 州</text><text x="140" y="240">四 川</text><text x="450" y="38">甘 肃</text><text x="705" y="60">陕 西</text></g><path d="${D.chapters.map((c,i)=>(i?'L':'M')+' '+c.x*9+' '+c.y*6.2).join(' ')}" fill="none" stroke="#b82d25" stroke-width="3" stroke-dasharray="7 7"/><text x="50" y="550" fill="#aa8b70" font-size="12">历史节点示意 · 非精确地理路线</text></svg>`;}
- function mapPage(){const c=D.chapters[selected];return `${pageHeading('FOLLOW THE FOOTSTEPS','万水千山，一路向前','循着历史的足迹，在九站征途中读懂信仰、勇气与担当。')}<div class="journey-overview"><span>${icon('flag')} 我的征途 <b>${state.completed.length}</b><span>/ 9 站已点亮</span></span><button class="text-button" data-action="route-info">关于这条路线 ⓘ</button></div><div class="journey-layout"><div class="journey-map">${routeArt()}<div class="map-heading"><span>1934 — 1936</span><h3>星火征途</h3><p>点击站点，开启历史对话</p></div>${D.chapters.map((n,i)=>`<button class="map-node ${selected===i?'selected':''} ${state.completed.includes(n.id)?'completed':''}" style="left:${n.x}%;top:${n.y}%" data-node="${i}" aria-label="第${i+1}站 ${n.title}${state.completed.includes(n.id)?' 已完成':''}" aria-pressed="${selected===i}"><span>${state.completed.includes(n.id)?'✓':String(i+1).padStart(2,'0')}</span><b>${n.title}</b></button>`).join('')}<div class="map-legend"><span><i></i> 待探索</span><span><i></i> 已点亮</span><span class="compass">N ↑</span></div></div><article class="chapter-panel"><div class="chapter-num">第 ${String(selected+1).padStart(2,'0')} 站 <span>${c.tag}</span></div><h2>${c.title}</h2><p class="chapter-sub">${c.subtitle}</p><div class="chapter-meta"><span>${c.date}</span><span>${c.place}</span></div><p class="chapter-summary">${c.summary}</p><blockquote>${c.spirit}</blockquote><div class="mission-teaser"><div>${icon('flag')} 本站挑战 <span>${c.type==='decision'&&selected===8?'历史知识':'教学模拟'}</span></div><h3>${c.mission}</h3><p>${c.intro}</p></div><button class="primary full" data-mission="${selected}">${state.completed.includes(c.id)?'重温本站挑战':'开启本站挑战'} ${arrow()}</button><a class="source-inline" href="${D.sources[c.source].url}" target="_blank" rel="noopener noreferrer">史料：${D.sources[c.source].publisher} ↗</a><div class="chapter-pagination"><button data-node="${Math.max(0,selected-1)}" ${selected===0?'disabled':''}>← 上一站</button><button data-node="${Math.min(8,selected+1)}" ${selected===8?'disabled':''}>下一站 →</button></div></article></div><div class="station-list">${D.chapters.map((n,i)=>`<button class="${selected===i?'selected':''}" data-node="${i}"><small>${n.date}</small><b>${state.completed.includes(n.id)?'✓':String(i+1).padStart(2,'0')} ${n.title}</b></button>`).join('')}</div>`;}
+ function mapPage(){if(journeyView==='graph')return graphPage();const c=D.chapters[selected];return `${pageHeading('FOLLOW THE FOOTSTEPS','万水千山，一路向前','循着历史的足迹，在九站征途中读懂信仰、勇气与担当。')}${journeyTabs()}<div class="journey-overview"><span>${icon('flag')} 我的征途 <b>${state.completed.length}</b><span>/ 9 站已点亮</span></span><button class="text-button" data-action="route-info">关于这条路线 ⓘ</button></div><div class="journey-layout"><div class="journey-map">${routeArt()}<div class="map-heading"><span>1934 — 1936</span><h3>星火征途</h3><p>点击站点，开启历史对话</p></div>${D.chapters.map((n,i)=>`<button class="map-node ${selected===i?'selected':''} ${state.completed.includes(n.id)?'completed':''}" style="left:${n.x}%;top:${n.y}%" data-node="${i}" aria-label="第${i+1}站 ${n.title}${state.completed.includes(n.id)?' 已完成':''}" aria-pressed="${selected===i}"><span>${state.completed.includes(n.id)?'✓':String(i+1).padStart(2,'0')}</span><b>${n.title}</b></button>`).join('')}<div class="map-legend"><span><i></i> 待探索</span><span><i></i> 已点亮</span><span class="compass">N ↑</span></div></div><article class="chapter-panel"><div class="chapter-num">第 ${String(selected+1).padStart(2,'0')} 站 <span>${c.tag}</span></div><h2>${c.title}</h2><p class="chapter-sub">${c.subtitle}</p><div class="chapter-meta"><span>${c.date}</span><span>${c.place}</span></div><p class="chapter-summary">${c.summary}</p><blockquote>${c.spirit}</blockquote><div class="mission-teaser"><div>${icon('flag')} 本站挑战 <span>${c.type==='decision'&&selected===8?'历史知识':'教学模拟'}</span></div><h3>${c.mission}</h3><p>${c.intro}</p></div><button class="primary full" data-mission="${selected}">${state.completed.includes(c.id)?'重温本站挑战':'开启本站挑战'} ${arrow()}</button><a class="source-inline" href="${D.sources[c.source].url}" target="_blank" rel="noopener noreferrer">史料：${D.sources[c.source].publisher} ↗</a><div class="chapter-pagination"><button data-node="${Math.max(0,selected-1)}" ${selected===0?'disabled':''}>← 上一站</button><button data-node="${Math.min(8,selected+1)}" ${selected===8?'disabled':''}>下一站 →</button></div></article></div><div class="station-list">${D.chapters.map((n,i)=>`<button class="${selected===i?'selected':''}" data-node="${i}"><small>${n.date}</small><b>${state.completed.includes(n.id)?'✓':String(i+1).padStart(2,'0')} ${n.title}</b></button>`).join('')}</div>`;}
+ // 地图与图谱共用 selected；视图状态不写入学习存档。
+ function journeyTabs() {
+  return `<div class="journey-tabs" role="group" aria-label="重走长征视图">
+   <button data-journey-view="route" aria-pressed="${journeyView==='route'}">① 历史路线</button>
+   <button data-journey-view="graph" aria-pressed="${journeyView==='graph'}">② 星火记忆图谱</button>
+  </div>`;
+ }
+ function graphContext() {
+  if(!graphExpanded)return {nodes:D.graph.nodes.filter(n=>n.type==='place'),relations:D.graph.relations.filter(r=>r.relation==='时间先后')};
+  const c=D.chapters[selected], eventId=`event:${c.id}`;
+  const ids=new Set([c.id,eventId]);
+  D.graph.relations.filter(r=>r.from===eventId).forEach(r=>ids.add(r.to));
+  // 人物到故事的关系同样进入当前子图。
+  D.graph.relations.filter(r=>ids.has(r.from)&&r.relation==='人物故事').forEach(r=>ids.add(r.to));
+  return {nodes:D.graph.nodes.filter(n=>n.type==='place'||ids.has(n.id)),
+   relations:D.graph.relations.filter(r=>r.relation==='时间先后'||(ids.has(r.from)&&ids.has(r.to)))};
+ }
+ function graphArt() {
+  const {nodes,relations}=graphContext(), c=D.chapters[selected];
+  const positions=new Map(D.chapters.map((n,i)=>[n.id,{x:88,y:48+i*80,width:146}]));
+  const secondary=nodes.filter(n=>!['place','event'].includes(n.type));
+  if(graphExpanded)positions.set(`event:${c.id}`,{x:292,y:368,width:164});
+  secondary.forEach((n,i)=>positions.set(n.id,{x:530,y:100+i*106,width:190}));
+  const typeNames={place:'历史地点',event:'历史事件',person:'历史人物',story:'红色故事',spirit:'精神内涵'};
+  const edges=relations.map(r=>{
+   const a=positions.get(r.from),b=positions.get(r.to);
+   if(!a||!b)return '';
+   const timeline=r.relation==='时间先后';
+   let path,labelX,labelY;
+   if(timeline)path=`M ${a.x} ${a.y+24} L ${b.x} ${b.y-26}`;
+   else if(r.relation==='人物故事') {
+    path=`M ${a.x+a.width/2} ${a.y} C 660 ${a.y},660 ${b.y},${b.x+b.width/2+3} ${b.y}`;
+    labelX=641;labelY=(a.y+b.y)/2;
+   } else {
+    const start=a.x+a.width/2,end=b.x-b.width/2;
+    path=`M ${start} ${a.y} C ${(start+end)/2} ${a.y},${(start+end)/2} ${b.y},${end-4} ${b.y}`;
+    labelX=(start+end)/2;labelY=b.y-12;
+   }
+   return `<g class="graph-edge ${timeline?'timeline':''}"><title>${esc(D.graph.index[r.from].title)} → ${esc(D.graph.index[r.to].title)}：${esc(r.relation)}</title><path d="${path}" marker-end="url(#graph-arrow)"/>${!timeline?`<text x="${labelX}" y="${labelY}" text-anchor="middle">${esc(r.relation)}</text>`:''}</g>`;
+  }).join('');
+  return `<svg class="memory-graph" viewBox="0 0 680 750" role="group" aria-labelledby="graph-title graph-description">
+   <title id="graph-title">星火记忆图谱${graphExpanded?' · '+esc(c.title):' · 九站总览'}</title>
+   <desc id="graph-description">左侧九站按时间先后排列。点击或按回车展开右侧的事件、人物、故事和精神节点。箭头表示关系方向。</desc>
+   <defs><marker id="graph-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#a87947"/></marker></defs>
+   ${edges}
+   ${nodes.map(n=>{
+    const p=positions.get(n.id),isSelected=graphExpanded&&n.id===c.id;
+    const chapter=n.type==='place'?D.chapters.find(x=>x.id===n.id):null;
+    const label=n.type==='place'?`${D.chapters.indexOf(chapter)+1}. ${n.title}`:n.title;
+    // 长故事名分两行，保留完整无障碍名称。
+    const lines=label.length>11?[label.slice(0,11),label.slice(11)]:[label];
+    return `<g class="graph-node type-${n.type} ${isSelected?'selected':''} ${graphExpanded&&n.type==='place'&&!isSelected?'muted':''}"
+     role="button" tabindex="0" data-graph-node="${n.id}" aria-label="${typeNames[n.type]}：${esc(n.title)}${n.type==='story'||(n.type==='person'&&D.people.find(p=>p.id===n.personId)?.storyId)?'，打开故事':'，查看档案'}" ${n.type==='place'?`aria-pressed="${isSelected}"`:''} transform="translate(${p.x} ${p.y})">
+     <rect x="${-p.width/2}" y="-27" width="${p.width}" height="54" rx="${n.type==='spirit'?22:4}"/>
+     <text text-anchor="middle" class="graph-type" y="-12">${typeNames[n.type]}</text>
+     <text text-anchor="middle" class="graph-label" y="${lines.length>1?3:10}">${lines.map((line,i)=>`<tspan x="0" dy="${i?16:0}">${esc(line)}</tspan>`).join('')}</text>
+    </g>`;
+   }).join('')}
+  </svg>`;
+ }
+ function graphArchive() {
+  const c=D.chapters[selected],d=c.detail,eventId=`event:${c.id}`;
+  const related=D.graph.relations.filter(r=>r.from===eventId).map(r=>D.graph.index[r.to]);
+  const group=type=>related.filter(n=>n.type===type).map(n=>`<button class="archive-chip" data-graph-node="${n.id}">${esc(n.title)} ↗</button>`).join('');
+  return `<article class="graph-archive" aria-labelledby="archive-title">
+   <span class="overline">历史档案 · 第 ${selected+1} 站</span><h2 id="archive-title" tabindex="-1">${esc(d.event)}</h2>
+   <dl class="archive-meta"><div><dt>具体时间</dt><dd>${esc(d.date)}</dd></div><div><dt>发生地点</dt><dd>${esc(c.place)}</dd></div></dl>
+   <div class="archive-keywords" aria-label="精神关键词">${group('spirit')}</div>
+   <section><h3>历史背景</h3><p>${esc(d.background)}</p></section>
+   <section><h3>事件经过</h3><p>${esc(d.process)}</p></section>
+   <section><h3>重要人物</h3>${group('person')||'<p class="archive-note">本档案暂未收录经逐条核验的具体人物，待补充专题史料；不表示该事件没有相关人物。</p>'}</section>
+   <section><h3>红色记忆</h3>${group('story')||'<p class="archive-note">暂无直接对应的现有故事，可继续探索关联人物与精神。</p>'}</section>
+   <section><h3>历史意义</h3><p>${esc(d.significance)}</p></section>
+   <section><h3>长征精神</h3><p>${esc(c.spirit)}</p></section>
+   <section><h3>参考史料</h3>${d.sources.map(sourceLink).join('')}</section>
+   <div class="archive-challenge"><p>${selected===8?'历史知识挑战':'原创教学模拟，非历史场景复原'} · 浏览档案不会点亮集章。</p><button class="primary full" data-mission="${selected}">进入本站挑战 ${arrow()}</button></div>
+  </article>`;
+ }
+ function graphPage() {
+  return `${pageHeading('EXPLORE CONNECTED MEMORIES','星火记忆图谱','沿着地点、事件、人物与故事，探索相互连接的长征记忆。')}${journeyTabs()}
+   <div class="graph-layout"><section class="graph-board" aria-label="历史关系网络">
+    <div class="graph-toolbar"><div><strong>${graphExpanded?esc(D.chapters[selected].title):'九站 · 历史时间线'}</strong><p>点击节点探索 · 箭头表示关系方向</p></div><button class="outline" data-graph-reset>返回全部节点</button></div>
+    <div class="graph-legend"><span>地点</span><span>事件</span><span>人物</span><span>故事</span><span>精神</span></div>
+    <p class="graph-scroll-note">可左右滑动查看完整关系图，也可用下方站点按钮选择。</p>
+    <div class="graph-scroll" tabindex="0" aria-label="关系图滚动区域">${graphArt()}</div>
+    <div class="graph-stations" role="group" aria-label="选择历史站点">${D.chapters.map((c,i)=>`<button data-node="${i}" aria-pressed="${graphExpanded&&i===selected}">${esc(c.title)}</button>`).join('')}</div>
+    <div class="graph-extension"><span>延伸阅读 · 湖南汝城</span><button class="text-button" data-graph-node="story:quilt">半条被子，一片深情 ↗</button><p>独立故事，不标作九站地点的历史事件。</p></div>
+   </section>${graphExpanded?graphArchive():`<article class="graph-archive graph-welcome"><span class="overline">地点 → 事件 → 人物 → 故事 → 精神</span><h2>从一处坐标开始</h2><p>选择左侧任意历史节点，展开关联网络和详细档案。</p><p>从历史路线切换时保留当前站点；查看关系与档案不增加集章。完成本站原有挑战后，才会点亮该站。</p><button class="primary" data-node="${selected}">探索${esc(D.chapters[selected].title)} ${arrow()}</button></article>`}</div>`;
+ }
+ function refreshJourney(focusSelector) {
+  $('#content').innerHTML=mapPage();
+  if(focusSelector)$(focusSelector)?.focus({preventScroll:true});
+ }
+ function exploreGraphNode(id) {
+  const n=D.graph.index[id];
+  if(!n)return;
+  if(n.type==='place'||n.type==='event') {
+   selected=D.chapters.findIndex(c=>c.id===n.chapterId);graphExpanded=true;
+   refreshJourney(`[data-graph-node="${n.type==='place'?n.id:n.chapterId}"]`);
+   return;
+  }
+  if(n.type==='story'){story(n.storyId);return;}
+  const entry=n.type==='person'?D.people.find(p=>p.id===n.personId):D.spirits.find(s=>s.id===n.spiritId);
+  if(entry.storyId){story(entry.storyId);return;}
+  const stations=D.graph.relations.filter(r=>r.to===id&&r.from.startsWith('event:')).map(r=>D.graph.index[r.from].chapterId);
+  openModal(`<span class="overline">${n.type==='person'?'历史人物':'精神内涵'}</span><h2 id="dialog-title">${esc(n.title)}</h2><p class="modal-lead">${esc(entry.description)}</p>${sourceLink(entry.source)}<h3>继续探索关联地点</h3><div class="graph-stations">${stations.map(id=>`<button data-explore-chapter="${id}">${esc(D.graph.index[id].title)} ↗</button>`).join('')}</div>`);
+ }
+
  function challengePage(){return `${pageHeading('LEARN THROUGH PLAY','每一次挑战，都是精神的回响','用知识读懂历史，用协作跨越险阻。选择一种方式，开始你的挑战。')}<div class="challenge-hero"><div><span class="pill">知识与信念的双重旅程</span><h2>星火知识挑战</h2><p>每轮最多6题，涵盖长征历史与精神内涵。<br>作答后查看解析，让每个答案都有来处。</p><div class="quiz-mode-buttons"><button class="primary" data-quiz="all">综合挑战 ${arrow()}</button><button class="outline" data-quiz="历史">历史专场</button><button class="outline" data-quiz="精神">精神专场</button></div></div><div class="challenge-emblem">${icon('star')}<strong>${state.bestScore}<small>分</small></strong><span>我的最高成绩</span></div></div><div class="secondary-challenges"><button class="game-card" data-special="order">${icon('map')}<span class="overline">CHRONOLOGY</span><h3>时空排序</h3><p>把历史节点放回时间长河，梳理中央红军的征途。</p><span>开启排序挑战 ${arrow()}</span></button><button class="game-card" data-special="memory">${icon('code')}<span class="overline">COMMUNICATION</span><h3>星火传讯</h3><p>记住联络信号的顺序，在观察与专注中体验协作。</p><span>开启记忆挑战 ${arrow()}</span></button><button class="game-card" data-special="grid">${icon('flag')}<span class="overline">FIND A WAY</span><h3>机动路线</h3><p>观察阻碍，规划路径。坚定目标，也善于改变方法。</p><span>开启路线挑战 ${arrow()}</span></button></div><div class="learning-note">${icon('book')}<p>游戏中的行囊、棋盘与信号均为原创教学模型，不代表真实作战参数或历史原始记录。关卡可以重复尝试，学习比速度更重要。</p></div>`;}
  function storyCard(s){return `<article class="story-card"><button class="story-open" data-story="${s.id}"><div class="story-art story-${s.id}"><span>${s.symbol}</span><small>${s.category}</small><i>1934 — 1936</i></div><div class="story-copy"><span class="story-tag">${s.tag}</span><h3>${s.title}</h3><p>${s.summary}</p><span class="story-read">${state.read.includes(s.id)?'已读 · 再次回望':'阅读故事'} ${arrow()}</span></div></button><button class="favorite ${state.favorites.includes(s.id)?'on':''}" data-favorite="${s.id}" aria-label="${state.favorites.includes(s.id)?'取消收藏':'收藏'}${s.title}" aria-pressed="${state.favorites.includes(s.id)}">${icon('heart')}</button></article>`;}
  function memoryPage(){const filters=['全部','英雄人物','军民故事','精神坐标','征途记忆','我的收藏'];const stories=D.stories.filter(s=>memoryFilter==='全部'||(memoryFilter==='我的收藏'?state.favorites.includes(s.id):s.category===memoryFilter));return `${pageHeading('THE RED ARCHIVE','岁月远去，精神从未褪色','一位英雄，一段故事，一处精神坐标。让历史的温度，抵达今天的我们。')}<div class="filter-tabs" role="group" aria-label="筛选红色记忆">${filters.map(f=>`<button class="${memoryFilter===f?'active':''}" data-filter="${f}" aria-pressed="${memoryFilter===f}">${f}</button>`).join('')}</div><div class="memory-grid">${stories.map(storyCard).join('')||'<div class="empty-state">还没有收藏的故事。点击故事卡片上的爱心，把一束光装进行囊。</div>'}</div>`;}
@@ -39,9 +148,13 @@
  function sourceLink(index){const s=D.sources[index];return `<a class="source-inline" href="${s.url}" target="_blank" rel="noopener noreferrer">参考史料：${s.publisher} · ${s.title} ↗</a>`;}
  function sources(){openModal(`<span class="overline">ABOUT THE PROJECT</span><h2 id="dialog-title">让每一段记忆，都有来处</h2><p class="modal-lead">《星火征程》是纪念长征胜利90周年的互动学习作品。</p><div class="about-block"><h3>史料与艺术表达</h3><p>历史介绍为基于下列资料编写的简要转述；历史地图为节点示意。情境选择、行囊配置、路线棋盘、架桥与信号记忆均为教学创作，不是历史原貌复现。</p><p>界面、交互、关卡与程序重新设计；主视觉由 AI 辅助生成，作为主题艺术插画使用。创意研究参考了《前进之路》的参与式学习思路，未使用其代码、图片、界面或剧情。</p></div><div class="source-list">${D.sources.map((s,i)=>`<a href="${s.url}" target="_blank" rel="noopener noreferrer"><span>0${i+1}</span><div><b>${s.title}</b><small>${s.publisher}</small></div><span>↗</span></a>`).join('')}</div><p class="fine-print">网页不收集个人身份信息。学习记录与手记保存在本机浏览器，清除浏览器数据会同时清除记录。</p>`,true);}
  function guide(){openModal(`<span class="overline">A SMALL GUIDE</span><h2 id="dialog-title">从第一束星火开始</h2><div class="guide-steps"><p><b>01 · 重走长征</b>点击地图站点，阅读史实，完成不同类型的挑战。可以自由探索，也可以按时间顺序前进。</p><p><b>02 · 收藏与思考</b>阅读红色记忆，收藏触动你的故事；知识挑战中，每道题都有解析与来源。</p><p><b>03 · 把感动变成行动</b>在青春接力中完成实际行动，保存手记。到我的行囊查看印记、导出记录。</p></div><button class="primary full" data-guide-start>开启我的征途 ${arrow()}</button>`);}
- function story(id){const s=D.stories.find(x=>x.id===id);if(!s)return;state.read=[...new Set([...state.read,id])];save();openModal(`<div class="story-modal-banner story-${s.id}"><span>${s.symbol}</span><small>${s.tag}</small></div><span class="overline">${s.category} / ${s.time}</span><h2 id="dialog-title">${s.title}</h2><div class="story-body">${s.text.split('\n\n').map(p=>`<p>${p}</p>`).join('')}</div><div class="thinking"><strong>把故事带回今天</strong><p>${s.question}</p></div>${sourceLink(s.source)}<div class="modal-actions"><button class="outline" data-favorite="${id}">${icon('heart')} ${state.favorites.includes(id)?'已收藏 · 点击取消':'收藏这束光'}</button><button class="primary" data-story-action>写下我的回应 ${arrow()}</button></div>`);}
+ function storyChapterLinks(id) {
+  const chapters=D.graph.relations.filter(r=>r.to===`story:${id}`&&r.from.startsWith('event:')).map(r=>D.graph.index[r.from].chapterId);
+  return chapters.length?`<h3>在图谱中继续探索</h3><div class="graph-stations">${chapters.map(id=>`<button data-explore-chapter="${id}">${esc(D.graph.index[id].title)} ↗</button>`).join('')}</div>`:'';
+ }
+ function story(id){const s=D.stories.find(x=>x.id===id);if(!s)return;state.read=[...new Set([...state.read,id])];save();openModal(`<div class="story-modal-banner story-${s.id}"><span>${s.symbol}</span><small>${s.tag}</small></div><span class="overline">${s.category} / ${s.time}</span><h2 id="dialog-title">${s.title}</h2><div class="story-body">${s.text.split('\n\n').map(p=>`<p>${p}</p>`).join('')}</div><div class="thinking"><strong>把故事带回今天</strong><p>${s.question}</p></div>${sourceLink(s.source)}${storyChapterLinks(id)}<div class="modal-actions"><button class="outline" data-favorite="${id}">${icon('heart')} ${state.favorites.includes(id)?'已收藏 · 点击取消':'收藏这束光'}</button><button class="primary" data-story-action>写下我的回应 ${arrow()}</button></div>`);}
  const sequence=[['observe','观察环境'],['support','稳固支撑'],['lay','铺设通道'],['walk','协同通过']];
- const order=['于都启程','血战湘江','遵义转折','飞夺泸定桥','吴起会师'];
+ const order=['yudu','xiangjiang','zunyi','luding','wuqi'].map(id=>D.chapters.find(c=>c.id===id).title);
  const symbols=[['★','星火'],['△','山峰'],['≈','河流'],['⌂','营地']];
  function startMission(index,special){const c=special?{type:special,mission:{order:'时空排序',memory:'星火传讯',grid:'机动路线'}[special],intro:{order:'按发生时间从早到晚，依次选择五个历史节点。',memory:'记住四个联络符号的顺序，再准确传递给同伴。',grid:'从起点出发，点击相邻格，避开障碍，到达星火出口。'}[special]}:D.chapters[index];active={kind:'mission',index,special,c,values:[0,0,0,0],path:[0],chosen:[],hidden:false,pattern:Array.from({length:4},()=>Math.floor(Math.random()*4))};renderMission();}
  function missionInner(){const {c}=active;switch(c.type){
@@ -61,10 +174,14 @@
  function download(data,name,type){const url=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
  function exportRecord(){const text=['星火征程 · 我的学习记录','导出时间：'+new Date().toLocaleString('zh-CN',{timeZone:'Asia/Shanghai'}),'','九站征途：'+state.completed.length+'/9',...D.chapters.map(c=>(state.completed.includes(c.id)?'✓ ':'○ ')+c.title+' · '+c.date),'','已读红色记忆：'+state.read.length+'/6','收藏：'+D.stories.filter(s=>state.favorites.includes(s.id)).map(s=>s.title).join('、'),'知识最高分：'+state.bestScore,'','青春行动：',...D.actions.map(a=>(state.actions.includes(a.id)?'✓ ':'○ ')+a.title),'','我的学习手记：',state.note||'尚未记录'].join('\n');download('\ufeff'+text,'星火征程-我的学习记录.txt','text/plain;charset=utf-8');toast('学习记录已导出');}
  function certificate(){if(state.completed.length<9)return;const canvas=document.createElement('canvas');canvas.width=1500;canvas.height=1000;const ctx=canvas.getContext('2d');ctx.fillStyle='#f6ecd9';ctx.fillRect(0,0,1500,1000);ctx.fillStyle='#b52d25';ctx.fillRect(0,0,1500,20);ctx.strokeStyle='#b52d25';ctx.lineWidth=2;ctx.strokeRect(45,45,1410,910);ctx.textAlign='center';ctx.fillStyle='#b52d25';ctx.font='80px serif';ctx.fillText('★',750,160);ctx.font='bold 76px serif';ctx.fillText('万水千山，初心不改',750,285);ctx.fillStyle='#806650';ctx.font='25px sans-serif';ctx.fillText('星火征程 · 九站探索纪念卡',750,350);ctx.font='32px serif';ctx.fillStyle='#514337';ctx.fillText('已完成九站历史探索与精神挑战',750,455);ctx.font='23px sans-serif';D.chapters.forEach((c,i)=>{const x=280+(i%3)*470,y=550+Math.floor(i/3)*80;ctx.fillStyle='#b52d25';ctx.fillText('★ '+c.title,x,y);});ctx.fillStyle='#806650';ctx.font='24px serif';ctx.fillText('九十载长征 · 代码续星火',750,845);ctx.font='19px sans-serif';ctx.fillText('1936 — 2026  |  青春的长征，继续向前',750,900);canvas.toBlob(blob=>{if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='星火征程-九站纪念卡.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);},'image/png');toast('纪念卡已生成');}
- document.addEventListener('click',e=>{const b=e.target.closest('button,a');if(!b||b.disabled)return;const d=b.dataset;
+ document.addEventListener('click',e=>{const b=e.target.closest('button,a,[data-graph-node]');if(!b||b.disabled)return;const d=b.dataset;
   if(d.nav){go(d.nav);return;}
-  if(d.start!==undefined){selected=Number(d.start);if(current==='map')render('map');else go('map');return;}
-  if(d.node!==undefined){selected=Number(d.node);$('#content').innerHTML=mapPage();return;}
+  if(d.start!==undefined){hasJourneySelection=true;graphExpanded=true;selected=Number(d.start);if(current==='map')render('map');else go('map');return;}
+  if(d.journeyView){journeyView=d.journeyView;graphExpanded=hasJourneySelection;refreshJourney(`[data-journey-view="${journeyView}"]`);return;}
+  if(d.graphReset!==undefined){graphExpanded=false;refreshJourney('[data-graph-reset]');return;}
+  if(d.graphNode){hasJourneySelection=true;exploreGraphNode(d.graphNode);return;}
+  if(d.exploreChapter){selected=D.chapters.findIndex(c=>c.id===d.exploreChapter);hasJourneySelection=true;graphExpanded=true;journeyView='graph';closeModal();if(current==='map')refreshJourney('#archive-title');else go('map');return;}
+  if(d.node!==undefined){hasJourneySelection=true;graphExpanded=true;selected=Number(d.node);refreshJourney(journeyView==='graph'?`[data-graph-node="${D.chapters[selected].id}"]`:`.map-node[data-node="${selected}"]`);return;}
   if(d.mission!==undefined){startMission(Number(d.mission));return;}
   if(d.special){startMission(-1,d.special);return;}
   if(d.quiz){startQuiz(d.quiz);return;}
@@ -76,7 +193,7 @@
   if(d.storyAction!==undefined){closeModal();go('action');return;}
   if(d.finishBack!==undefined){const p=active?.special?'challenge':'map';closeModal();go(p);return;}
   if(d.finishBag!==undefined){closeModal();go('bag');return;}
-  if(d.nextChapter!==undefined){selected=Number(d.nextChapter);closeModal();go('map');return;}
+  if(d.nextChapter!==undefined){hasJourneySelection=true;graphExpanded=true;selected=Number(d.nextChapter);closeModal();go('map');return;}
   if(d.submitPack!==undefined){if(C.packing(active.values))finishMission('在有限资源下兼顾行进、健康、保暖与协作，体现统筹准备和对伙伴的关心。'+active.c.spirit);else feedback('再调整一下：总量不超过12格，食物至少3格、医疗2格、保暖3格、工具2格。');return;}
   if(d.decision!==undefined){if(Number(d.decision)===active.c.answer)finishMission(active.c.explain);else feedback('再想一想：'+(active.index===8?'注意区分1935年中央红军到达陕北与1936年三大主力会师。':'兼顾实际情况、共同使命与同行伙伴，再试一次。'));return;}
   if(d.cell!==undefined){const next=Number(d.cell);if(!C.canStep(active.path,next)){toast('请选择与当前位置上下左右相邻、尚未走过的格子');return;}active.path.push(next);if(next===24)finishMission('你通过观察与调整找到了一条通路。坚定目标、灵活运用方法，是这个抽象解谜希望传达的启发。');else renderMission();return;}
@@ -92,6 +209,7 @@
   if(d.confirmReset!==undefined){state=C.initial();save();closeModal();render('bag');toast('本机学习记录已清空');return;}
   switch(d.action){case 'close':closeModal();break;case 'sources':sources();break;case 'guide':guide();break;case 'route-info':openModal('<span class="overline">READING THE MAP</span><h2 id="dialog-title">九个节点，一段精神旅程</h2><p class="modal-lead">地图以中央红军长征主要节点为线索，延伸到1936年红军三大主力会师。它不是全部红军长征路线的完整复原。</p><p>各支红军长征的出发时间、路线和行程有所不同。1935年10月中央红军到达陕北，与1936年10月三大主力会师应当区分。</p><p>地图为便于互动设计的示意图，不按地理比例绘制。所有节点均可自由浏览，完成挑战后点亮印记。</p>'+sourceLink(1));break;case 'save-note':state.note=$('#reflection-note').value;save();toast('你的青春回应已保存在本机');break;case 'export':exportRecord();break;case 'certificate':certificate();break;case 'reset':openModal('<h2 id="dialog-title">清空本机学习记录？</h2><p class="modal-lead">将清除当前浏览器中的征途进度、收藏、成绩、行动与手记。需要留存时，可先导出学习记录。</p><div class="modal-actions"><button class="outline" data-action="close">保留记录</button><button class="primary" data-confirm-reset>确认清空</button></div>');break;}
  });
+ document.addEventListener('keydown',e=>{const node=e.target.closest('[data-graph-node][role=button]');if(node&&(e.key==='Enter'||e.key===' ')){e.preventDefault();node.dispatchEvent(new MouseEvent('click',{bubbles:true}));}});
  document.addEventListener('input',e=>{if(e.target.dataset.pack!==undefined){const i=Number(e.target.dataset.pack);active.values[i]=Number(e.target.value);$('#pack-out-'+i).textContent=e.target.value;const total=active.values.reduce((a,b)=>a+b,0);$('#pack-total').textContent=total;$('#pack-total').classList.toggle('over-capacity',total>12);}if(e.target.id==='reflection-note'){$('#note-count').textContent=e.target.value.length+' / 3000';}});
  $('#dialog').addEventListener('click',e=>{if(e.target===$('#dialog')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeModal();}});
  $('#dialog').addEventListener('cancel',()=>{active=null;});
