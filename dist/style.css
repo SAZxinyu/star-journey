@@ -75,3 +75,47 @@ body:has(dialog[open]){overflow:hidden}dialog{border:1px solid #dbc6a7;padding:0
 @media(max-width:1190px) {.graph-layout {grid-template-columns:minmax(0,3fr) minmax(280px,2fr);gap:16px}.graph-archive {padding:22px}.graph-scroll-note {display:block}}
 @media(max-width:960px) {.graph-layout {grid-template-columns:1fr}.memory-graph {max-width:760px;margin:auto}.graph-scroll-note {display:block}}
 @media(max-width:650px) {.journey-tabs {gap:8px}.journey-tabs button {flex:1;padding:10px 8px;font-size:13px}.graph-toolbar {padding:18px 15px 8px}.graph-toolbar strong {font-size:20px}.graph-toolbar .outline {font-size:11px}.graph-legend {padding:8px 15px;gap:12px}.graph-archive {padding:22px}.graph-archive h2 {font-size:27px}.graph-stations {padding:14px}.graph-stations button {flex:1 0 28%;font-size:12px}.graph-scroll {max-height:680px}.graph-archive .primary {font-size:14px}}
+
+/* 红色电波：纸张上的通信学习模型，无真实频谱或历史电文。 */
+.radio-history {display:grid;gap:18px;margin:22px 0}
+.radio-history h3,.radio-equipment h3,.radio-station h3,.radio-result h3 {font:600 21px/1.6 var(--serif);color:#8e3025;margin:0 0 8px}
+.radio-history p,.radio-equipment p,.radio-result p {font-size:14px;line-height:2;color:#70533c}
+.radio-equipment {padding:20px;background:#f1e3ca;border:1px solid #d8bd96;margin:20px 0}
+.radio-device {display:block;color:#916333;width:100%;max-width:560px;height:auto;margin:18px auto}
+.radio-network {color:#906034;background:#f2e4cd;border:1px solid #d6b994;width:100%;height:auto;margin:20px 0}
+.signal-live {stroke:var(--red);stroke-dasharray:7 4;animation:radio-flow 3s linear infinite}
+.signal-idle {stroke:#b9a284;stroke-dasharray:3 6;opacity:.7}
+.signal-wave {color:var(--red)}
+@keyframes radio-flow {to {stroke-dashoffset:-44}}
+.radio-progress {display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}
+.radio-progress span {padding:8px 16px;border:1px solid #cdb18a;color:#8a6a47;font-size:13px}
+.radio-progress .done {background:#b92c24;color:#fff1d7;border-color:#b92c24}
+.radio-feedback {padding:15px 18px;min-height:60px;background:#f4e5ca;border-left:3px solid var(--red);font-size:14px;line-height:1.9;color:#763e2a;margin-bottom:20px}
+.radio-stations {display:grid;grid-template-columns:1fr 1fr;gap:15px}
+.radio-station {border:1px solid #cfb28c;padding:20px;background:#fbf1df}
+.radio-station.onair {border:2px solid #b92c24;padding:19px;background:#f9ead3}
+.radio-station-title {display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.radio-station-title h3 {margin:0}
+.radio-station-title strong {font-size:13px;color:#9d3024}
+.radio-station>p {font-size:13px;line-height:1.9;color:#7d6045;margin:8px 0}
+.radio-controls {display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.radio-controls button {font-size:13px;min-height:44px;padding:10px 12px}
+.radio-model-note {font-size:12px;line-height:1.9;color:#81664b;padding:15px 0;margin:18px 0;border-top:1px dashed #cbb28e}
+.radio-result {margin:22px 0;padding:22px;border:1px solid #bf9662;background:#f2e1bd}
+.radio-references {margin-top:18px;font-size:14px;color:#795337}
+.radio-references summary {cursor:pointer;min-height:44px;padding:10px 0}
+.radio-references .source-inline {display:block;line-height:1.8;font-size:12px}
+.graph-extension>[data-communication-topic] {margin-bottom:20px;min-height:44px;font-size:14px}
+.graph-node.type-topic rect {fill:#edd2a1;stroke:#aa472b}
+.graph-node.type-equipment rect {fill:#ecdec5;stroke:#8c6542}
+.graph-archive .radio-history {gap:0}
+@media(max-width:650px) {
+ .radio-stations {grid-template-columns:1fr}
+ .radio-station {padding:18px}.radio-station.onair {padding:17px}
+ .radio-history h3,.radio-equipment h3,.radio-result h3 {font-size:20px}
+ .radio-equipment {padding:16px}
+ .radio-history p,.radio-equipment p {font-size:14px}
+ .radio-progress {gap:7px}.radio-progress span {font-size:12px;padding:8px 12px}
+ .radio-feedback {font-size:14px}
+ .radio-network {min-height:125px}
+}
